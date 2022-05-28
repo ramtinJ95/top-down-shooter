@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
 
     // we use this for movment so that we dont move at different speeds
     // depending on the current framerate of the computer
-    public void FixedUpdate()
+    private void FixedUpdate()
     {
         // fixedDeltaTime is the time between frames that unity uses to keep the
         // game running at a controlled tick rate. 
