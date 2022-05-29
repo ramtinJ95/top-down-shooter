@@ -34,7 +34,7 @@ public class Enemy : LivingEntity
             if (!dead)
             {
                 pathFinder.SetDestination(targetPosition);
-                yield return new WaitForSeconds(refreshRate);
+                yield return new WaitForSeconds(refreshRate); //When a yield statement is used, the coroutine pauses execution and automatically resumes at the next frame
             }
         }
     }
