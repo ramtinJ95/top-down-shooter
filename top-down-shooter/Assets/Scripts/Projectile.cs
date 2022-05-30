@@ -8,6 +8,25 @@ public class Projectile : MonoBehaviour
     float speed = 10;
     float damage = 1;
 
+    float lifetime = 2;
+    // this is to compensate for situations where the enemy and projectile are moving towards eachother
+    // in such cases the projectile could end up inside the enemy inbetween frames and thus not register as a hit again
+    // this will extend the length of the projectile slightly and make this much much less likley to happen. 
+    float skinWidth = .1f;  
+
+    private void Start()
+    {
+        Destroy(gameObject, lifetime);
+
+        // this part is to check if the bullet that is shot start inside the enemy incase they are super close
+        // since the raycast will not detect a collision if this is the case. 
+        Collider[] initialCollisions = Physics.OverlapSphere(transform.position, .1f, collisionMask);
+        if (initialCollisions.Length > 0)
+        {
+            onHitObject(initialCollisions[0]);
+        }
+    }
+
     public void SetSpeed(float newSpeed)
     {
         speed = newSpeed;
@@ -28,7 +47,7 @@ public class Projectile : MonoBehaviour
     {
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, moveDistance, collisionMask, QueryTriggerInteraction.Collide))
+        if (Physics.Raycast(ray, out hit, moveDistance + skinWidth, collisionMask, QueryTriggerInteraction.Collide))
         {
             OnHitObject(hit);
         }
@@ -40,6 +59,17 @@ public class Projectile : MonoBehaviour
         if(damageableObject != null)
         {
             damageableObject.TakeHit(damage, hit);
+        }
+        //print(hit.collider.gameObject.name);
+        GameObject.Destroy(gameObject);
+    }
+
+    private void onHitObject(Collider c)
+    {
+        IDamageable damageableObject = c.GetComponent<IDamageable>();
+        if (damageableObject != null)
+        {
+            damageableObject.TakeDamage(damage);
         }
         //print(hit.collider.gameObject.name);
         GameObject.Destroy(gameObject);
